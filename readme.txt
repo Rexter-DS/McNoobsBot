@@ -1,0 +1,1 @@
+A Discord bot used to connect to a Minecraft server running on a Pterodactyl panel.

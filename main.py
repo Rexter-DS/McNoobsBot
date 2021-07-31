@@ -1,22 +1,35 @@
 import os
 import discord
+# from pydactyl import PterodactylClient #upm package(py-dactyl)
+from keep_alive import keep_alive
 
+# save secret keys to variables
 server_key = os.environ['server_key']
+panel_url = os.environ['panel_url']
 
-client = discord.Client()
+# connect to the discord and pterodactly clients
+discord_client = discord.Client()
+# server_client = PterodactylClient(panel_url, server_key)
 
-@client.event
+# my_servers = server_client.client.list_servers()
+# print(my_servers)
+
+# event for when discord bot is ready
+@discord_client.event
 async def on_ready():
-  print('We have logged in as {0.user}'.format(client))
+  print('We have logged in as {0.user}'.format(discord_client))
 
-@client.event
+# event for when a user sends a message
+@discord_client.event
 async def on_message(message):
-  if message.author == client.user:
+
+  # check to see if the message was from the bot
+  if message.author == discord_client.user:
     return
   
   if message.content.startswith('!hello'):
     await message.channel.send('Hello :)')
 
-client.run(os.getenv('discord_key'))
 
-
+keep_alive()
+discord_client.run(os.getenv('discord_key'))
