@@ -42,6 +42,6 @@ async def on_message(message):
     return
   
   if message.content.startswith('!'):
-    print(message.content)
+    await hello(message)
   
 discord_client.run(os.getenv('discord_key'))
