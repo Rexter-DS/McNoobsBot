@@ -1,4 +1,5 @@
 import os
+import urllib.request
 from dotenv import load_dotenv
 from pydactyl import PterodactylClient #upm package(py-dactyl)
 from discord.ext import commands
@@ -14,6 +15,16 @@ panel_url = os.environ['PANEL_URL']
 # connect to the discord and pterodactly clients
 server_client = PterodactylClient(panel_url, server_key)
 
+# helper functions
+def get_logs():
+  latest_log_url = server_client.client.download_file(server_id, '/logs/latest.log')
+  response = urllib.request.urlopen(latest_log_url)
+  data = response.read()
+  
+  return data.decode('utf-8')
+
+# -----------------------------------------------  BOT STUFF -----------------------------------------------------------------------
+
 # set the command prefix to be $
 bot = commands.Bot(command_prefix='$')
 
@@ -23,6 +34,22 @@ async def on_ready():
   print('Logged in as')
   print(bot.user.name)
   print(bot.user.id)
+
+@bot.command()
+async def list(ctx):
+  # send the /list command to the server
+  server_client.client.send_console_command(server_id, '/list')
+
+  # get the latest log and split it by lines
+  log = get_logs()
+  log_list = log.splitlines()
+
+  # get the last line and break it up
+  last_line = log_list.pop()
+  last_line_list = last_line.split(' ', 3)
+
+  # send to server
+  await ctx.send(last_line_list[3])
 
 # command for sending power actions to server
 @bot.command()
