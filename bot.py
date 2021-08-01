@@ -1,8 +1,9 @@
 import os
+import discord
 import urllib.request
 from dotenv import load_dotenv
 from pydactyl import PterodactylClient #upm package(py-dactyl)
-from discord.ext import commands
+from discord.ext import commands, tasks
 
 # load environment variables from .env
 load_dotenv()
@@ -15,13 +16,28 @@ panel_url = os.environ['PANEL_URL']
 # connect to the discord and pterodactly clients
 server_client = PterodactylClient(panel_url, server_key)
 
-# helper functions
+# ----------------------------------------------- helper functions ----------------------------------------------------------------
+
+# get the latest log from the server
 def get_logs():
   latest_log_url = server_client.client.download_file(server_id, '/logs/latest.log')
   response = urllib.request.urlopen(latest_log_url)
   data = response.read()
   
   return data.decode('utf-8')
+
+@tasks.loop(seconds=5.0)
+async def check_server(ctx, option):
+  # get current server state
+  server_utilization = server_client.client.get_server_utilization(server_id)
+  current_state = server_utilization.get('current_state')
+
+  if ((option == 'start' or option == 'restart') and current_state == 'running'):
+    await ctx.send('current state of server: ' + current_state)
+    check_server.cancel()
+  elif ((option == 'stop' or option == 'kill') and current_state == 'offline'):
+    await ctx.send('current state of server: ' + current_state)
+    check_server.cancel()
 
 # -----------------------------------------------  BOT STUFF -----------------------------------------------------------------------
 
@@ -35,7 +51,10 @@ async def on_ready():
   print(bot.user.name)
   print(bot.user.id)
 
-@bot.command()
+# ----------------------------------------------- command functions ----------------------------------------------------------------
+
+# command for checking the list of players online
+@bot.command(name='list', brief='Returns the list of current online players', description='Returns the list of current online players')
 async def list(ctx):
   # send the /list command to the server
   server_client.client.send_console_command(server_id, '/list')
@@ -61,14 +80,9 @@ async def power(ctx, option):
     await ctx.send('sending ' + option + ' signal to server')
 
     # check the current state of the server
-    server_utilization = server_client.client.get_server_utilization(server_id)
-    await ctx.send('current state of server: ' + server_utilization.get('current_state'))
-  elif (option == 'help'):
-    # send user instructions
-    await ctx.send('Options: start, restart, stop, kill. Example: $power start.')
+    check_server.start(ctx, option)
   else:
-    # send user that the option they typed is invalid
-    await ctx.send('Invalid option. If you need help, type $power help.')
+    await ctx.send('Invalid option. If you need help, type $help power.')
 
 # command for checking the state of the server
 @bot.command()
