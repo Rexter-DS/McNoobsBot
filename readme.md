@@ -3,7 +3,8 @@ A Discord bot used to connect to a Minecraft server running on a Pterodactyl pan
 ## Current Commands
 
 **list**
-: Returns a  
+: Returns a number of players that are currently online on the server
+**
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTk4MDczNjQyNV19
+eyJoaXN0b3J5IjpbLTY1ODQyOTY0Nl19
 -->
