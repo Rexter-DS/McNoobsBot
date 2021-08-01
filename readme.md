@@ -4,3 +4,6 @@ Current features:
 - Sending a power command to the panel
 - Checking the number of online players on the server
 - 
+<!--stackedit_data:
+eyJoaXN0b3J5IjpbLTE5MzIxMDg0M119
+-->
