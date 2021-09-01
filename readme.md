@@ -12,7 +12,14 @@
 <dd>Sends a power signal to the server.</dd>
 <dd>Can be used with the following options: start, stop, restart, kill</dd>
 <dt><strong>state</strong></dt>
-<dd>Returns the current state of the server.</dd>
-<dd>Current states include: running, starting, stopping, offline</dd>
+<dd>
+
+**state**
+: Returns the current state of the server.</dd>
+<dd>
+: Current states include: running, starting, stopping, offline</dd>
 </dl>
 
+<!--stackedit_data:
+eyJoaXN0b3J5IjpbLTExMjkyMjk2NV19
+-->
